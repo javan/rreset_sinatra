@@ -1,0 +1,42 @@
+require 'httparty'
+require 'digest/md5'
+
+class Flickr
+  
+  API_KEY = '300af3865b046365f28aebbb392a3065'
+  SECRET  = '38d1e4ab6e9d89e1'
+  
+  include HTTParty
+  base_uri 'http://flickr.com/services/rest/'
+  format :xml
+
+  class << self
+  
+    def login_url
+      params = sign_params(default_params.merge(:perms => :read))
+      'http://flickr.com/services/auth/?' + params.map { |key, val| "#{key}=#{CGI.escape(val.to_s)}" }.join('&')
+    end
+    
+    def auth_get_token(frob)
+      params = sign_params(default_params.merge(:method => 'flickr.auth.getToken', :frob => frob))
+      get('', :query => params).symbolize_keys![:rsp][:auth]
+    end
+  
+    def photosets_get_list(user_id)
+      params = default_params.merge(:method => 'flickr.photosets.getList', :user_id => user_id)
+      get('', :query => params).symbolize_keys![:rsp][:photosets][:photoset].map(&:symbolize_keys!)
+    end
+  
+  private
+  
+    def sign_params(params)
+      params.merge!(:api_sig => Digest::MD5.hexdigest(SECRET + params.stringify_keys.sort.flatten.join))
+    end
+    
+    def default_params
+      { :api_key => API_KEY }
+    end
+    
+  end
+  
+end

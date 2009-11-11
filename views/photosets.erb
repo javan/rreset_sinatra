@@ -1,0 +1,8 @@
+<ul>
+  <% @photosets.each do |photoset| %>
+    <li id="photoset_<%= photoset[:id] %>">
+      <img src="<%= photoset_image_url(photoset) %>" /> <%= photoset[:title] %> - <%= photoset[:id] %><br />
+      <a href="#" onclick="$.ajax({ url: '/photosets', type: 'POST', dataType: 'script', data: { photoset_id: '<%= photoset[:id] %>' }}); return false;">create it</a>
+    </li>
+  <% end %>
+</ul>
