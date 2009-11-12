@@ -1,8 +1,21 @@
 <ul>
   <% @photosets.each do |photoset| %>
-    <li id="photoset_<%= photoset[:id] %>">
-      <img src="<%= photoset_image_url(photoset) %>" /> <%= photoset[:title] %> - <%= photoset[:id] %><br />
-      <a href="#" onclick="$.ajax({ url: '/photosets', type: 'POST', dataType: 'script', data: { photoset_id: '<%= photoset[:id] %>' }}); return false;">create it</a>
+    <li id="photoset_<%= photoset[:id] %>" class="photoset">
+      <img src="<%= photoset_image_url(photoset) %>" /> <%= photoset[:title] %>
+      <input type="checkbox" value="<%= photoset[:id] %>" <%= 'checked="checked"' if @created_photosets[photoset[:id]] %> />
     </li>
   <% end %>
 </ul>
+
+<script type="text/javascript" charset="utf-8">
+  $(function(){
+    $('.photoset input').change(function(){
+      var checkbox = $(this);
+      if (checkbox.attr('checked') == true) {
+        $.ajax({ url: '/photosets', type: 'POST', dataType: 'script', data: { photoset_id: checkbox.attr('value') }});
+      } else {
+        $.ajax({ url: '/photosets/'+checkbox.attr('value'), type: 'DELETE', dataType: 'script' });
+      }
+    });
+  });
+</script>

@@ -17,3 +17,13 @@ class Hash
     end
   end
 end
+
+module Enumerable
+  # Taken from ActiveSupport
+  def index_by
+    inject({}) do |accum, elem|
+      accum[yield(elem)] = elem
+      accum
+    end
+  end
+end
