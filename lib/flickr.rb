@@ -26,6 +26,11 @@ class Flickr
       params = default_params.merge(:method => 'flickr.photosets.getList', :user_id => user_id)
       get('', :query => params).symbolize_keys![:rsp][:photosets][:photoset].map(&:symbolize_keys!)
     end
+    
+    def photoset_get_info(photoset_id)
+      params = default_params.merge(:method => 'flickr.photosets.getInfo', :photoset_id => photoset_id)
+      get('', :query => params).symbolize_keys![:rsp][:photoset]
+    end
   
   private
   

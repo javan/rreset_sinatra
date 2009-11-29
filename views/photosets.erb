@@ -1,18 +1,22 @@
 <ul>
-  <% @photosets.each do |photoset| %>
-    <li id="photoset_<%= photoset[:id] %>" class="photoset">
-      <img src="<%= photoset_image_url(photoset) %>" /> <%= photoset[:title] %>
-      <input type="checkbox" value="<%= photoset[:id] %>" <%= 'checked="checked"' if @created_photosets[photoset[:id]] %> />
-    </li>
+  <% for @photoset in @photosets %>
+    <%= erb :photoset, :layout => false %>
   <% end %>
 </ul>
 
 <script type="text/javascript" charset="utf-8">
   $(function(){
-    $('.photoset input').change(function(){
+    $('.photoset input').live('change', function(){
       var checkbox = $(this);
       if (checkbox.attr('checked') == true) {
-        $.ajax({ url: '/photosets', type: 'POST', dataType: 'script', data: { photoset_id: checkbox.attr('value') }});
+        $.ajax({
+          url: '/photosets',
+          type: 'POST', data: { photoset_id: checkbox.attr('value') },
+          success: function(html) {
+            $('#photoset_'+checkbox.attr('value')).replaceWith(html);
+          }
+        });
+        checkbox.attr('disabled', true);
       } else {
         $.ajax({ url: '/photosets/'+checkbox.attr('value'), type: 'DELETE', dataType: 'script' });
       }

@@ -1,0 +1,6 @@
+<li id="photoset_<%= @photoset.photoset_id %>" class="photoset">
+  <label>
+    <img src="<%= @photoset.image_url %>" /> <%= @photoset.title %>
+    <input type="checkbox" value="<%= @photoset.photoset_id %>" <%= 'checked="checked"' if @created_photosets && @created_photosets[@photoset.photoset_id] %> />
+  </label>
+</li>
