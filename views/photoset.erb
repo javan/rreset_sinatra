@@ -1,6 +1,6 @@
 <div>
-  <a href="#" onclick="next_photo(); return false;">next</a>
-  <a href="#" onclick="prev_photo(); return false;">prev</a>
+  <a href="#" onclick="rreset.prev_photo(); return false;">prev</a>
+  <a href="#" onclick="rreset.next_photo(); return false;">next</a>
 </div>
 
 
@@ -8,37 +8,102 @@
 
 
 <script type="text/javascript" charset="utf-8">
-  set_id = '<%= @photoset.photoset_id %>'; //window.location.hash.split('#').reverse()[0];
-  set_data = null;
-  current_photo_data = null;
-  photo_index = 0;
-  api_endpoint = 'http://api.flickr.com/services/rest/?';
-  api_key = '300af3865b046365f28aebbb392a3065';
-  
-  function load_set() {
-    $.getJSON([api_endpoint, 'api_key=', api_key, '&method=flickr.photosets.getPhotos', '&photoset_id=', set_id, '&format=json&jsoncallback=?'].join(''), function(data){
-      set_data = data;
-      load_photo(0);
-    });
-    
-  }
-  
-  function load_photo() {
-    var photo_id = set_data.photoset.photo[photo_index].id;
-    $.getJSON([api_endpoint, 'api_key=', api_key, '&method=flickr.photos.getSizes', '&photo_id=', photo_id, '&format=json&jsoncallback=?'].join(''), function(data){
-      current_photo_data = data;
-      $('#photo').attr('src', current_photo_data.sizes.size[4].source);
-    });
-  }
-  
-  function next_photo() {
-    photo_index++
-    load_photo(photo_index);
-  }
-  
-  function prev_photo() {
-    load_photo(photo_index - 1);
-  }
+  var rreset = {
+    photoset: null,
+    photo: {},
+    current_photo_id: null,
+    ordered_photo_ids: [],
+    data_loading: false,
+    api_endpoint: 'http://api.flickr.com/services/rest/?',
+    api_key: '300af3865b046365f28aebbb392a3065',
 
-  $(load_set);
+    load_photoset: function(photoset_id){
+      rreset.data_loading = true;
+      $.getJSON([rreset.api_endpoint, 'api_key=', rreset.api_key, '&method=flickr.photosets.getPhotos', '&photoset_id=', photoset_id, '&format=json&jsoncallback=?'].join(''), function(data){
+        if (data.stat != 'ok') {
+          return rreset.bad_response();
+        }
+        rreset.photoset = data.photoset;
+        rreset.photoset.photo = rreset.photoset.photo;
+        // make an array of the photoset ids and initialize the photo object with the index
+        var index = 0;
+        $.each(rreset.photoset.photo, function(){
+          var photo_id = this.id;
+          rreset.photo[photo_id] = {};
+          rreset.photo[photo_id].index = index;
+          index++;
+          rreset.ordered_photo_ids.push(photo_id);
+        });
+        if (rreset.photo_id_from_window_hash() == null) {
+          // set the hash to the last photo
+          window.location.hash = rreset.photoset.photo[rreset.photoset.photo.length - 1].id;
+        }
+        rreset.load_photo();
+        rreset.monitor_window_hash_change();
+        rreset.data_loading = false;
+      });
+    },
+
+    load_photo: function(){
+      var photo_id = rreset.photo_id_from_window_hash();
+      if (!rreset.photo[photo_id].size){
+        rreset.data_loading = true;
+        $.getJSON([rreset.api_endpoint, 'api_key=', rreset.api_key, '&method=flickr.photos.getSizes', '&photo_id=', photo_id, '&format=json&jsoncallback=?'].join(''), function(data){
+          if (data.stat != 'ok') {
+            return rreset.bad_response();
+          }
+          rreset.photo[photo_id].size = data.sizes.size;
+          rreset.display_photo(photo_id);
+          rreset.data_loading = false
+        });
+      } else {
+        rreset.display_photo(photo_id);
+      }
+    },
+    
+    display_photo: function(photo_id) {
+      window.location.hash = photo_id;
+      rreset.current_photo_id = photo_id;
+      $('#photo').attr('src', rreset.photo[photo_id].size[4].source);
+    },
+
+    next_photo: function() {
+      window.location.hash = rreset.ordered_photo_ids[rreset.photo[rreset.current_photo_id].index + 1];
+      rreset.load_photo();
+    },
+
+    prev_photo: function() {
+      window.location.hash = rreset.ordered_photo_ids[rreset.photo[rreset.current_photo_id].index - 1];
+      rreset.load_photo();
+    },
+    
+    photo_id_from_window_hash: function(){
+      if (window.location.hash == '') {
+        return null;
+      } else {
+        return window.location.hash.split('#').reverse()[0];
+      }
+    },
+    
+    // this isn't working
+    monitor_window_hash_change: function() {
+      setInterval(function(){
+        if (!rreset.data_loading && rreset.current_photo_id != rreset.photo_id_from_window_hash()){
+          console.log('changed!');
+          rreset.load_photo();
+        }
+      }, 50);
+    },
+    
+    bad_response: function(){
+      rreset.data_loading = false;
+      alert('bad response!');
+      return false;
+    }
+  };
+
+
+  $(function(){ 
+    rreset.load_photoset('<%= @photoset.photoset_id %>');
+  });
 </script>
