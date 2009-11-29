@@ -10,11 +10,15 @@ DataMapper.setup(:default, 'mysql://localhost/rreset')
 
 class Photoset
   
+  DOMAIN = 'rreset.com'
+  
   include DataMapper::Resource
-
+  
   property :id,            Serial
   property :user_id,       String
   property :photoset_id,   String
+  property :domain,        String
+  property :subdomain,     String
   property :info,          Text
   property :created_at,    DateTime
   property :deleted,       Boolean,  :default => false
@@ -31,6 +35,26 @@ class Photoset
     "http://farm#{self.farm}.static.flickr.com/#{self.server}/#{self.primary}_#{self.secret}_s.jpg"
   end
   
+  def url
+    if ENV['RACK_ENV'] == 'development'
+      "localhost:9393/photosets/#{self.photoset_id}"
+    elsif self.domain
+      self.domain
+    elsif self.subdomain
+      "#{self.subdomain}.#{DOMAIN}"
+    else
+      "#{self.photoset_id}.#{DOMAIN}"
+    end
+  end
+  
+  def shared?
+    if self.created_at.nil? || self.deleted?
+      false
+    else
+      true
+    end
+  end
+  
   def method_missing(method, *args)
     info = self.info[method]
     if info
@@ -45,7 +69,6 @@ end
 DataMapper.auto_upgrade!
 
 enable :sessions
-set :sessions, true
 
 helpers do
 end
@@ -62,7 +85,7 @@ get '/login' do
 end
 
 get '/photosets' do
-  @created_photosets = Photoset.all(:user_id => session[:flickr][:user_id]).index_by(&:photoset_id) rescue {}
+  @created_photosets = Photoset.all(:user_id => session[:flickr][:user_id], :deleted => false).index_by(&:photoset_id) rescue {}
   @photosets = Flickr.photosets_get_list(session[:flickr][:user_id])
   
   created, not_created = [], []
@@ -75,7 +98,7 @@ get '/photosets' do
   end
   @photosets = created + not_created
   
-  erb :photosets
+  erb :'owner/photosets'
 end
 
 post '/photosets' do
@@ -87,7 +110,7 @@ post '/photosets' do
     @photoset = Photoset.create(:user_id => session[:flickr][:user_id], :photoset_id => params[:photoset_id], :info => info)
   end
   @created_photosets = { @photoset.photoset_id => true }
-  erb :photoset, :layout => false
+  erb :'owner/photoset', :layout => false
 end
 
 delete '/photosets/:photoset_id' do
@@ -96,8 +119,7 @@ delete '/photosets/:photoset_id' do
   ""
 end
 
-get '/photosets/:user_id/:photoset_id/?' do
-  Photoset.first(:user_id => session[:flickr][:user_id], :photoset_id => params[:photoset_id], :deleted => false)
- 
-  "<pre>#{@photoset.to_yaml}</pre>"
+get '/photosets/:photoset_id/?' do
+  @photoset = Photoset.first(:photoset_id => params[:photoset_id], :deleted => false)
+  erb :photoset
 end

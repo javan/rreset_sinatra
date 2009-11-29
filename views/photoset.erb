@@ -1,6 +1,44 @@
-<li id="photoset_<%= @photoset.photoset_id %>" class="photoset">
-  <label>
-    <img src="<%= @photoset.image_url %>" /> <%= @photoset.title %>
-    <input type="checkbox" value="<%= @photoset.photoset_id %>" <%= 'checked="checked"' if @created_photosets && @created_photosets[@photoset.photoset_id] %> />
-  </label>
-</li>
+<div>
+  <a href="#" onclick="next_photo(); return false;">next</a>
+  <a href="#" onclick="prev_photo(); return false;">prev</a>
+</div>
+
+
+<img id="photo" />
+
+
+<script type="text/javascript" charset="utf-8">
+  set_id = '<%= @photoset.photoset_id %>'; //window.location.hash.split('#').reverse()[0];
+  set_data = null;
+  current_photo_data = null;
+  photo_index = 0;
+  api_endpoint = 'http://api.flickr.com/services/rest/?';
+  api_key = '300af3865b046365f28aebbb392a3065';
+  
+  function load_set() {
+    $.getJSON([api_endpoint, 'api_key=', api_key, '&method=flickr.photosets.getPhotos', '&photoset_id=', set_id, '&format=json&jsoncallback=?'].join(''), function(data){
+      set_data = data;
+      load_photo(0);
+    });
+    
+  }
+  
+  function load_photo() {
+    var photo_id = set_data.photoset.photo[photo_index].id;
+    $.getJSON([api_endpoint, 'api_key=', api_key, '&method=flickr.photos.getSizes', '&photo_id=', photo_id, '&format=json&jsoncallback=?'].join(''), function(data){
+      current_photo_data = data;
+      $('#photo').attr('src', current_photo_data.sizes.size[4].source);
+    });
+  }
+  
+  function next_photo() {
+    photo_index++
+    load_photo(photo_index);
+  }
+  
+  function prev_photo() {
+    load_photo(photo_index - 1);
+  }
+
+  $(load_set);
+</script>

@@ -1,12 +1,12 @@
 <ul>
   <% for @photoset in @photosets %>
-    <%= erb :photoset, :layout => false %>
+    <%= erb :'owner/photoset', :layout => false %>
   <% end %>
 </ul>
 
 <script type="text/javascript" charset="utf-8">
   $(function(){
-    $('.photoset input').live('change', function(){
+    $('.photoset input.toggle').live('change', function(){
       var checkbox = $(this);
       if (checkbox.attr('checked') == true) {
         $.ajax({
