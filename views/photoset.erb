@@ -1,25 +1,34 @@
-<div>
-  <a href="#" onclick="rreset.prev_photo(); return false;">prev</a>
-  <a href="#" onclick="rreset.next_photo(); return false;">next</a>
-</div>
-
-
 <img id="photo" />
 
+<p class="controler">
+  <a href="#" id="prev_photo" style="display:none" onclick="rreset.prev_photo(); return false;">&larr;</a>
+  <a href="#" id="next_photo" style="display:none" onclick="rreset.next_photo(); return false;">&rarr;</a>
+  <a href="#" id="bigger_photo"  onclick="rreset.bigger_photo(); return false;">&uarr;</a>
+  <a href="#" id="smaller_photo"  onclick="rreset.smaller_photo(); return false;">&darr;</a>
+</p>
 
 <script type="text/javascript" charset="utf-8">
   var rreset = {
+    photoset_id: null,
     photoset: null,
     photo: {},
     current_photo_id: null,
+    photo_size: 3,
     ordered_photo_ids: [],
     data_loading: false,
     api_endpoint: 'http://api.flickr.com/services/rest/?',
     api_key: '300af3865b046365f28aebbb392a3065',
 
-    load_photoset: function(photoset_id){
+    initialize_photoset: function(photoset_id){
+      rreset.photoset_id = photoset_id;
+      rreset.load_photoset();
+      rreset.observe_window_hash_change();
+      rreset.initialize_key_controls();
+    },
+    
+    load_photoset: function(){
       rreset.data_loading = true;
-      $.getJSON([rreset.api_endpoint, 'api_key=', rreset.api_key, '&method=flickr.photosets.getPhotos', '&photoset_id=', photoset_id, '&format=json&jsoncallback=?'].join(''), function(data){
+      $.getJSON([rreset.api_endpoint, 'api_key=', rreset.api_key, '&method=flickr.photosets.getPhotos', '&photoset_id=', rreset.photoset_id, '&format=json&jsoncallback=?'].join(''), function(data){
         if (data.stat != 'ok') {
           return rreset.bad_response();
         }
@@ -28,24 +37,24 @@
         // make an array of the photoset ids and initialize the photo object with the index
         var index = 0;
         $.each(rreset.photoset.photo, function(){
-          var photo_id = this.id;
-          rreset.photo[photo_id] = {};
-          rreset.photo[photo_id].index = index;
+          rreset.photo[this.id] = {};
+          rreset.photo[this.id].index = index;
           index++;
-          rreset.ordered_photo_ids.push(photo_id);
+          rreset.ordered_photo_ids.push(this.id);
         });
+        
         if (rreset.photo_id_from_window_hash() == null) {
           // set the hash to the last photo
           window.location.hash = rreset.photoset.photo[rreset.photoset.photo.length - 1].id;
         }
-        rreset.load_photo();
-        rreset.monitor_window_hash_change();
         rreset.data_loading = false;
+        rreset.load_photo();
       });
     },
 
     load_photo: function(){
       var photo_id = rreset.photo_id_from_window_hash();
+      rreset.current_photo_id = photo_id;
       if (!rreset.photo[photo_id].size){
         rreset.data_loading = true;
         $.getJSON([rreset.api_endpoint, 'api_key=', rreset.api_key, '&method=flickr.photos.getSizes', '&photo_id=', photo_id, '&format=json&jsoncallback=?'].join(''), function(data){
@@ -57,24 +66,77 @@
           rreset.data_loading = false
         });
       } else {
-        rreset.display_photo(photo_id);
+        rreset.display_photo();
       }
     },
     
-    display_photo: function(photo_id) {
-      window.location.hash = photo_id;
-      rreset.current_photo_id = photo_id;
-      $('#photo').attr('src', rreset.photo[photo_id].size[4].source);
+    display_photo: function() {
+      $('#photo').attr('src', rreset.photo[rreset.current_photo_id].size[rreset.photo_size].source);
+      // hide next if on last photo
+      if (rreset.on_last_photo()) {
+        $('#next_photo').hide();
+      } else {
+        $('#next_photo').show();
+      }
+      
+      // hide prev photo if on first photo
+      if (rreset.on_first_photo()) {
+        $('#prev_photo').hide();
+      } else {
+        $('#prev_photo').show();
+      }
     },
 
     next_photo: function() {
-      window.location.hash = rreset.ordered_photo_ids[rreset.photo[rreset.current_photo_id].index + 1];
-      rreset.load_photo();
+      if (!rreset.on_last_photo()) {
+        window.location.hash = rreset.ordered_photo_ids[rreset.photo[rreset.current_photo_id].index + 1];
+        rreset.load_photo();
+      } else {
+        rreset.shake_photo();
+      }
     },
 
     prev_photo: function() {
-      window.location.hash = rreset.ordered_photo_ids[rreset.photo[rreset.current_photo_id].index - 1];
-      rreset.load_photo();
+      if (!rreset.on_first_photo()) {
+        window.location.hash = rreset.ordered_photo_ids[rreset.photo[rreset.current_photo_id].index - 1];
+        rreset.load_photo(); 
+      } else {
+        rreset.shake_photo();
+      }
+    },
+    
+    on_first_photo: function() {
+      if (rreset.photo[rreset.current_photo_id].index == 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    
+    on_last_photo: function() {
+      if (rreset.photo[rreset.current_photo_id].index == rreset.ordered_photo_ids.length - 1) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    
+    bigger_photo: function() {
+      if (rreset.photo[rreset.current_photo_id].size[rreset.photo_size + 1]) {
+        rreset.photo_size++;
+        rreset.display_photo();
+      } else {
+        rreset.shake_photo();
+      }
+    },
+    
+    smaller_photo: function() {
+      if (rreset.photo[rreset.current_photo_id].size[rreset.photo_size - 1]) {
+        rreset.photo_size--;
+        rreset.display_photo();
+      } else {
+        rreset.shake_photo();
+      }
     },
     
     photo_id_from_window_hash: function(){
@@ -85,25 +147,52 @@
       }
     },
     
-    // this isn't working
-    monitor_window_hash_change: function() {
+    observe_window_hash_change: function() {
       setInterval(function(){
         if (!rreset.data_loading && rreset.current_photo_id != rreset.photo_id_from_window_hash()){
-          console.log('changed!');
           rreset.load_photo();
         }
-      }, 50);
+      }, 60);
+    },
+    
+    initialize_key_controls: function() {
+      $(document).keyup(function(e) {
+        var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+  			switch(key) {
+  				case 37: // left
+  				  rreset.prev_photo();
+  				  break;
+  				case 38: // up
+  				  rreset.bigger_photo();
+  				  break;
+  				case 39: // right
+  				  rreset.next_photo();
+  				  break;
+  				case 40: // down
+  				  rreset.smaller_photo();
+  				  break;
+  			}
+      });
     },
     
     bad_response: function(){
       rreset.data_loading = false;
       alert('bad response!');
       return false;
+    },
+    
+    shake_photo: function() {
+      for (var i = 0; i <= 2; i++) {
+        $('#photo').animate({ marginLeft: '-6px' }, 40)
+                   .animate({ marginLeft: '6px' }, 80)
+                   .animate({ marginLeft: '0' }, 30);
+      }
     }
+    
   };
 
 
   $(function(){ 
-    rreset.load_photoset('<%= @photoset.photoset_id %>');
+    rreset.initialize_photoset('<%= @photoset.photoset_id %>');
   });
 </script>
