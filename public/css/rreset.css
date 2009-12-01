@@ -1,0 +1,31 @@
+body { font: 13px helvetica; padding: 10px; }
+
+p { 
+  margin: 5px 0 0 0 0;
+  padding: 0;
+}
+.photoset {
+  list-style-type: none;
+  margin: 0 15px 15px 0;
+  padding: 0;
+  width: 350px;
+  display: inline;
+  float: left;
+  vertical-align: middle;
+  -moz-box-shadow: 2px 2px 8px #ccc;
+   -webkit-box-shadow: 1px 1px 10px #ccc;
+   box-shadow: 1px 1px 10px #ccc;
+}
+  .photoset img {
+    float: left;
+  }
+  .photoset label {
+    margin: 0;
+    padding: 0;
+  }
+
+img#photo {
+  -moz-box-shadow: 2px 2px 8px #ccc;
+  -webkit-box-shadow: 0px 0px 8px #333;
+  box-shadow: 1px 1px 10px #ccc;
+}

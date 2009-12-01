@@ -71,6 +71,9 @@ DataMapper.auto_upgrade!
 enable :sessions
 
 helpers do
+  def signed_in?
+    session[:flickr] && session[:flickr][:user_id] && session[:flickr][:token]
+  end
 end
   
 get '/' do
@@ -114,9 +117,10 @@ post '/photosets' do
 end
 
 delete '/photosets/:photoset_id' do
-  Photoset.first(:photoset_id => params[:photoset_id], :user_id => session[:flickr][:user_id]).update(:deleted => true)
-  headers 'Content-Type' => 'text/javascript; charset=utf-8'
-  ""
+  @photoset = Photoset.first(:photoset_id => params[:photoset_id], :user_id => session[:flickr][:user_id])
+  @photoset.update(:deleted => true)
+  
+  erb :'owner/photoset', :layout => false
 end
 
 get '/photosets/:photoset_id/?' do
