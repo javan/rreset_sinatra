@@ -6,6 +6,7 @@ var rreset = {
   photo_size: 3,
   ordered_photo_ids: [],
   data_loading: false,
+  window_hash_override: null,
   api_endpoint: 'http://api.flickr.com/services/rest/?',
   api_key: '300af3865b046365f28aebbb392a3065',
 
@@ -32,11 +33,7 @@ var rreset = {
         index++;
         rreset.ordered_photo_ids.push(this.id);
       });
-      
-      if (rreset.photo_id_from_window_hash() == null) {
-        // set the hash to the last photo
-        window.location.hash = rreset.photoset.photo[rreset.photoset.photo.length - 1].id;
-      }
+
       rreset.data_loading = false;
       rreset.load_photo();
     });
@@ -131,7 +128,13 @@ var rreset = {
   
   photo_id_from_window_hash: function(){
     if (window.location.hash == '') {
-      return null;
+      // If there's no photo_id in the window hash and the photoset is loaded,
+      // return the last photo in the set, we're on the "index" page.
+      if (rreset.photoset.photo) {
+        return rreset.photoset.photo[rreset.photoset.photo.length - 1].id;
+      } else {
+        return null;
+      }
     } else {
       return window.location.hash.split('#').reverse()[0];
     }
