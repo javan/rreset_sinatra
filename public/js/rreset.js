@@ -3,9 +3,10 @@ var rreset = {
   photoset: null,
   photo: {},
   current_photo_id: null,
-  photo_size: 3,
+  photo_size: 4,
   ordered_photo_ids: [],
   data_loading: false,
+  shaking: false,
   window_hash_override: null,
   api_endpoint: 'http://api.flickr.com/services/rest/?',
   api_key: '300af3865b046365f28aebbb392a3065',
@@ -18,7 +19,7 @@ var rreset = {
   },
   
   load_photoset: function(){
-    rreset.data_loading = true;
+    rreset.loading();
     $.getJSON([rreset.api_endpoint, 'api_key=', rreset.api_key, '&method=flickr.photosets.getPhotos', '&photoset_id=', rreset.photoset_id, '&format=json&jsoncallback=?'].join(''), function(data){
       if (data.stat != 'ok') {
         return rreset.bad_response();
@@ -34,23 +35,21 @@ var rreset = {
         rreset.ordered_photo_ids.push(this.id);
       });
 
-      rreset.data_loading = false;
       rreset.load_photo();
     });
   },
 
-  load_photo: function(){
+  load_photo: function(preload){
     var photo_id = rreset.photo_id_from_window_hash();
     rreset.current_photo_id = photo_id;
     if (!rreset.photo[photo_id].size){
-      rreset.data_loading = true;
+      rreset.loading();
       $.getJSON([rreset.api_endpoint, 'api_key=', rreset.api_key, '&method=flickr.photos.getSizes', '&photo_id=', photo_id, '&format=json&jsoncallback=?'].join(''), function(data){
         if (data.stat != 'ok') {
           return rreset.bad_response();
         }
         rreset.photo[photo_id].size = data.sizes.size;
-        rreset.display_photo(photo_id);
-        rreset.data_loading = false
+        rreset.display_photo();
       });
     } else {
       rreset.display_photo();
@@ -58,20 +57,45 @@ var rreset = {
   },
   
   display_photo: function() {
-    $('#photo').attr('src', rreset.photo[rreset.current_photo_id].size[rreset.photo_size].source);
-    // hide next if on last photo
-    if (rreset.on_last_photo()) {
-      $('#next_photo').hide();
-    } else {
-      $('#next_photo').show();
+    // local function to call after the image has been preloaded.
+    var loaded = function() {
+      if (!rreset.photo[rreset.current_photo_id].size) {
+        return false;
+      }
+      
+      $('#photo').attr('src', rreset.photo[rreset.current_photo_id].size[rreset.photo_size].img.src);
+      // hide next if on last photo
+      if (rreset.on_last_photo()) {
+        $('#next_photo').hide();
+      } else {
+        $('#next_photo').show();
+      }
+
+      // hide prev photo if on first photo
+      if (rreset.on_first_photo()) {
+        $('#prev_photo').hide();
+      } else {
+        $('#prev_photo').show();
+      }
+      rreset.done_loading();
+    };
+    
+    if (rreset.current_photo_id != rreset.photo_id_from_window_hash() || !rreset.photo[rreset.current_photo_id].size) {
+      return false;
     }
     
-    // hide prev photo if on first photo
-    if (rreset.on_first_photo()) {
-      $('#prev_photo').hide();
+    rreset.loading();
+    
+    if (rreset.photo[rreset.current_photo_id].size[rreset.photo_size].img) {
+      loaded();
     } else {
-      $('#prev_photo').show();
+      rreset.photo[rreset.current_photo_id].size[rreset.photo_size].img = new Image();
+      rreset.photo[rreset.current_photo_id].size[rreset.photo_size].img.src = rreset.photo[rreset.current_photo_id].size[rreset.photo_size].source;
+      $(rreset.photo[rreset.current_photo_id].size[rreset.photo_size].img).load(function(){
+        loaded();
+      });
     }
+   
   },
 
   next_photo: function() {
@@ -175,11 +199,26 @@ var rreset = {
   },
   
   shake_photo: function() {
-    for (var i = 0; i <= 2; i++) {
-      $('#photo').animate({ marginLeft: '-3px' }, 30)
-                 .animate({ marginLeft: '3px' }, 60)
-                 .animate({ marginLeft: '0' }, 30);
+    if (!rreset.shaking) {
+      rreset.shaking = true;
+      $('#photo').animate({ marginLeft: '-5px' }, 40)
+                 .animate({ marginLeft: '5px' }, 80)
+                 .animate({ marginLeft: '0' }, 40, function(){
+                   rreset.shaking = false;
+                 });
     }
+    
+    rreset.done_loading();
+  },
+  
+  loading: function() {
+    rreset.data_loading = true;
+    $('#loading').show();
+  },
+  
+  done_loading: function() {
+    rreset.data_loading = false;
+    $('#loading').hide();
   }
   
 };

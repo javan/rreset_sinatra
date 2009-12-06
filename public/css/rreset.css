@@ -80,3 +80,9 @@ p#controls {
   a#smaller_photo {
     bottom: 25px;
   }
+
+span#loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
