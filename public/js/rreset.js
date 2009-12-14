@@ -152,9 +152,13 @@ var rreset = {
   },
 
   next_photo: function() {
+    if (rreset.is_loading()) {
+      return false;
+    }
     if (!rreset.on_last_photo()) {
       window.location.hash = rreset.next_photo_id();
       rreset.load_photo();
+      $('#next_photo').addClass('activity');
     } else {
       rreset.shake_photo();
     }
@@ -179,9 +183,13 @@ var rreset = {
   },
 
   prev_photo: function() {
+    if (rreset.is_loading()) {
+      return false;
+    }
     if (!rreset.on_first_photo()) {
       window.location.hash = rreset.prev_photo_id();
-      rreset.load_photo(); 
+      rreset.load_photo();
+      $('#prev_photo').addClass('activity');
     } else {
       rreset.shake_photo();
     }
@@ -245,6 +253,7 @@ var rreset = {
   
   initialize_key_controls: function() {
     $(document).keyup(function(e) {
+      e.preventDefault();
       var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
 			switch(key) {
 				case 37: // left
@@ -288,9 +297,14 @@ var rreset = {
     document.title = 'loading...';
   },
   
+  is_loading: function() {
+    return rreset.data_loading;
+  },
+  
   done_loading: function() {
     rreset.data_loading = false;
     $('#loading').hide();
+    $('.activity').removeClass('activity');
   }
   
 }
