@@ -3,9 +3,6 @@ require 'digest/md5'
 
 class Flickr
   
-  API_KEY = '300af3865b046365f28aebbb392a3065'
-  SECRET  = '38d1e4ab6e9d89e1'
-  
   include HTTParty
   base_uri 'http://flickr.com/services/rest/'
   format :xml
@@ -35,11 +32,11 @@ class Flickr
   private
   
     def sign_params(params)
-      params.merge!(:api_sig => Digest::MD5.hexdigest(SECRET + params.stringify_keys.sort.flatten.join))
+      params.merge!(:api_sig => Digest::MD5.hexdigest(FLICKR_SECRET + params.stringify_keys.sort.flatten.join))
     end
     
     def default_params
-      { :api_key => API_KEY }
+      { :api_key => FLICKR_API_KEY }
     end
     
   end

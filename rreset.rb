@@ -1,74 +1,21 @@
 require 'rubygems'
 require 'sinatra'
 require 'yaml'
-require 'lib/core_extensions'
-require 'lib/flickr'
 require 'dm-core'
 require 'dm-timestamps'
-
-DataMapper.setup(:default, 'mysql://localhost/rreset')
-
-class Photoset
-  
-  DOMAIN = 'rreset.com'
-  
-  include DataMapper::Resource
-  
-  property :id,            Serial
-  property :user_id,       String
-  property :photoset_id,   String
-  property :domain,        String
-  property :subdomain,     String
-  property :info,          Text
-  property :created_at,    DateTime
-  property :deleted,       Boolean,  :default => false
-  
-  def info=(info_hash)
-    self[:info] = info_hash.to_yaml
-  end
-  
-  def info
-    YAML::load(self[:info])
-  end
-  
-  def image_url
-    "http://farm#{self.farm}.static.flickr.com/#{self.server}/#{self.primary}_#{self.secret}_s.jpg"
-  end
-  
-  def url
-    if ENV['RACK_ENV'] == 'development'
-      "localhost:9393/photosets/#{self.photoset_id}"
-    elsif self.domain
-      self.domain
-    elsif self.subdomain
-      "#{self.subdomain}.#{DOMAIN}"
-    else
-      "#{self.photoset_id}.#{DOMAIN}"
-    end
-  end
-  
-  def shared?
-    if self.created_at.nil? || self.deleted?
-      false
-    else
-      true
-    end
-  end
-  
-  def method_missing(method, *args)
-    info = self.info[method]
-    if info
-      info
-    else
-      raise NoMethodError
-    end
-  end
-  
-end
-
-DataMapper.auto_upgrade!
+require 'lib/core_extensions'
+require 'lib/flickr'
+require 'lib/photoset.rb'
 
 enable :sessions
+
+configure :development do
+  FLICKR_API_KEY = '300af3865b046365f28aebbb392a3065'
+  FLICKR_SECRET  = '38d1e4ab6e9d89e1'
+  
+  DataMapper.setup(:default, 'mysql://localhost/rreset')
+  DataMapper.auto_upgrade!
+end
 
 helpers do
   def signed_in?
