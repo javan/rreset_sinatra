@@ -9,7 +9,7 @@ var rreset = {
   shaking: false,
   window_hash_override: null,
   api_endpoint: 'http://api.flickr.com/services/rest/?',
-  api_key: '300af3865b046365f28aebbb392a3065',
+  api_key: null,
 
   initialize_photoset: function(photoset_id){
     rreset.photoset_id = photoset_id;

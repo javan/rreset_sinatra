@@ -7,6 +7,9 @@
   <% if signed_in? %>
     <script type="text/javascript" charset="utf-8" src="/js/rreset_owner.js"></script>
   <% end %>
+  <script type="text/javascript" charset="utf-8">
+    Flickr.api_key = <%= FLICKR_KEY %>;
+  </script>
   <link href="/css/rreset.css" media="screen" rel="stylesheet" type="text/css" />
   <title>rreset</title>
 

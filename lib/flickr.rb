@@ -36,7 +36,7 @@ class Flickr
     end
     
     def default_params
-      { :api_key => FLICKR_API_KEY }
+      { :api_key => FLICKR_KEY }
     end
     
   end

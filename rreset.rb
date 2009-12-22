@@ -9,11 +9,18 @@ require 'lib/photoset.rb'
 
 enable :sessions
 
-configure :development do
-  FLICKR_API_KEY = '300af3865b046365f28aebbb392a3065'
-  FLICKR_SECRET  = '38d1e4ab6e9d89e1'
+configure do
+  FLICKR_KEY = ENV['FLICKR_KEY']
+  FLICKR_SECRET  = ENV['FLICKR_SECRET']
   
-  DataMapper.setup(:default, 'mysql://localhost/rreset')
+  DataMapper.setup(:default, ENV['DATABASE_URL'] || 'mysql://localhost/rreset')
+end
+
+configure :development do 
+  DataMapper.auto_migrate!
+end
+
+configure :production do
   DataMapper.auto_upgrade!
 end
 
