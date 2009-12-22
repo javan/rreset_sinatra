@@ -91,8 +91,21 @@ var rreset = {
         $('#prev_photo').show();
       }
       
-      rreset.done_loading();
+      // hide smaller button if on smallest
+      if (rreset.photo_size == 0) {
+        $('#smaller_photo').hide();
+      } else {
+        $('#smaller_photo').show();
+      }
       
+      // hide bigger button if on biggest
+      if (rreset.photo_size == rreset.photo[rreset.current_photo_id].size.length - 1) {
+        $('#bigger_photo').hide();
+      } else {
+        $('#bigger_photo').show();
+      }
+      
+      rreset.done_loading();
       rreset.load_photo_info();
       rreset.preload_neighbors();
     };
@@ -214,6 +227,7 @@ var rreset = {
   bigger_photo: function() {
     if (rreset.photo[rreset.current_photo_id].size[rreset.photo_size + 1]) {
       rreset.photo_size++;
+      $('#bigger_photo').addClass('activity');
       rreset.display_photo();
     } else {
       rreset.shake_photo();
@@ -223,6 +237,7 @@ var rreset = {
   smaller_photo: function() {
     if (rreset.photo[rreset.current_photo_id].size[rreset.photo_size - 1]) {
       rreset.photo_size--;
+      $('#smaller_photo').addClass('activity');
       rreset.display_photo();
     } else {
       rreset.shake_photo();
@@ -304,7 +319,10 @@ var rreset = {
   done_loading: function() {
     rreset.data_loading = false;
     $('#loading').hide();
-    $('.activity').removeClass('activity');
+    setTimeout(function(){
+      $('.activity').removeClass('activity');
+    }, 10);
+    
   }
   
 }

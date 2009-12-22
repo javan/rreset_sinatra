@@ -2,17 +2,15 @@
 
 <p><img id="photo" /></p>
 
-<p id="controls_vertical" class="controls">
-  <a href="#" id="bigger_photo" class="vertical" style="display:nonee" onclick="rreset.bigger_photo(); return false;">&uarr;</a>
-  <a href="#" id="smaller_photo" class="vertical"style="display:nonee" onclick="rreset.smaller_photo(); return false;">&darr;</a>
-</p>
-
 <p id="controls_horizontal" class="controls">
-  <a href="#" id="prev_photo" class="horizontal" style="display:none" onclick="rreset.prev_photo(); return false;">&larr;</a>
-  <a href="#" id="next_photo" class="horizontal" style="display:none" onclick="rreset.next_photo(); return false;">&rarr;</a>
+  <a href="#" id="prev_photo" onclick="rreset.prev_photo(); return false;">&lsaquo;</a>
+  <a href="#" id="next_photo" onclick="rreset.next_photo(); return false;">&rsaquo;</a>
 </p>
 
-
+<p id="controls_vertical" class="controls">
+  <a href="#" id="bigger_photo"  onclick="rreset.bigger_photo();  return false;">+</a>
+  <a href="#" id="smaller_photo" onclick="rreset.smaller_photo(); return false;">-</a>
+</p>
 
 <p id="info"></p>
 

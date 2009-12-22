@@ -12,6 +12,12 @@ p {
   margin: 5px 0 0 0 0;
   padding: 0;
 }
+
+.box_shadow {
+  -moz-box-shadow: 0px 0px 3px #ccc;
+  -webkit-box-shadow: 0px 0px 3px #ccc;
+  box-shadow: 0px 0px 3px #ccc;
+}
 .photoset {
   list-style-type: none;
   margin: 0 15px 15px 0;
@@ -20,9 +26,6 @@ p {
   display: inline;
   float: left;
   vertical-align: middle;
-  -moz-box-shadow: 2px 2px 8px #ccc;
-   -webkit-box-shadow: 1px 1px 10px #ccc;
-   box-shadow: 1px 1px 10px #ccc;
 }
   .photoset img {
     float: left;
@@ -33,9 +36,6 @@ p {
   }
 
 img#photo {
-  -moz-box-shadow: 0px 0px 8px #333;
-  -webkit-box-shadow: 0px 0px 8px #333;
-  box-shadow: 0px 0px 8px #333;
   display: block;
 }
 
@@ -43,7 +43,7 @@ p.controls {
   position: relative;
   margin: 0;
   padding: 0;
-  height: 30px;
+  height: 40px;
   text-shadow: #ccc 0 0 3px;
 }
 
@@ -54,10 +54,19 @@ p.controls {
     margin: 0;
     line-height: 0;
     color: #000;
+    border-radius: 5px;
+    border: 1px solid #fff;
+    display: none;
   }
   
   p.controls a:hover {
-    color: #fff;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    -moz-box-shadow: 0px 0px 2px #ccc;
+    -webkit-box-shadow: 0px 0px 2px #ccc;
+    box-shadow: 0px 0px 2px #ccc;
   }
   
   p#controls_horizontal {
@@ -66,16 +75,20 @@ p.controls {
   }
   
     p#controls_horizontal a {
-      font-size: 35px;
+      font-size: 34px;
+      width: 40px;
+      height: 40px;
+      text-align: center;
+      line-height: 40px;
     }
     
     a#prev_photo {
-      top: 15px;
+      top: 0;
       left: 0;
     }
 
     a#next_photo {
-      top: 15px;
+      top: 0;
       right: 0;
     }
   
@@ -86,26 +99,37 @@ p.controls {
   }
   
     p#controls_vertical a {
-      font-size: 11px;
+      font-size: 12px;
+      width: 16px;
+      height: 16px;
+      line-height: 16px;
+      text-align: center;
+      color: #333;
     }
   
     a#bigger_photo {
-      top: 5px;
+      top: 0;
       left: 0;
     }
   
     a#smaller_photo {
-      bottom: 5px;
+      bottom: 0;
       left: 0;
     }
   
   .activity {
-    color: red !important;
+    color: #cc3ab2 !important;
   }
 
 span#loading {
   position: fixed;  
   top: 0;
   left: 0;
-  background-color: #fff;
+  background-color: #cc3ab2;
+  color: #fff;
+  padding: 1px 2px;
+}
+
+p#info {
+  clear: both;
 }
