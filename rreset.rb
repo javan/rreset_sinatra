@@ -31,8 +31,7 @@ helpers do
 end
 
 error do
-  e = request.env['sinatra.error']
-  Kernel.puts e.backtrace.join("\n")
+  "Oops. #{request.env['sinatra.error'].name} - #{request.env['sinatra.error'].message}"
 end
 
 get '/' do
