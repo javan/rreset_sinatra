@@ -1,5 +1,6 @@
 require 'httparty'
 require 'digest/md5'
+require 'cgi'
 
 class Flickr
   
