@@ -9,18 +9,11 @@ require 'lib/photoset.rb'
 
 enable :sessions
 
+DataMapper.setup(:default, ENV['DATABASE_URL'] || 'mysql://localhost/rreset')
+
 configure do
-  FLICKR_KEY = ENV['FLICKR_KEY']
-  FLICKR_SECRET  = ENV['FLICKR_SECRET']
-  
-  DataMapper.setup(:default, ENV['DATABASE_URL'] || 'mysql://localhost/rreset')
-end
-
-configure :development do 
-  DataMapper.auto_migrate!
-end
-
-configure :production do
+  FLICKR_KEY = ENV['FLICKR_KEY'] || '300af3865b046365f28aebbb392a3065'
+  FLICKR_SECRET  = ENV['FLICKR_SECRET'] || '38d1e4ab6e9d89e1'
   DataMapper.auto_upgrade!
 end
 
@@ -46,7 +39,7 @@ get '/login' do
 end
 
 get '/photosets' do
-  @created_photosets = Photoset.all(:user_id => session[:flickr][:user_id], :deleted => false).index_by(&:photoset_id) rescue {}
+  @created_photosets = Photoset.all(:user_id => session[:flickr][:user_id], :deleted => false).index_by { |p| p.photoset_id } rescue {}
   @photosets = Flickr.photosets_get_list(session[:flickr][:user_id])
   
   created, not_created = [], []
