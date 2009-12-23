@@ -1,2 +1,2 @@
 require 'rreset'
-run run Sinatra::Application
+run Sinatra::Application
