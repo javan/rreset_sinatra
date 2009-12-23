@@ -29,7 +29,12 @@ helpers do
     session[:flickr] && session[:flickr][:user_id] && session[:flickr][:token]
   end
 end
-  
+
+error do
+  e = request.env['sinatra.error']
+  Kernel.puts e.backtrace.join("\n")
+end
+
 get '/' do
   erb :index
 end
