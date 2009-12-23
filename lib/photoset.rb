@@ -9,18 +9,18 @@ class Photoset
   property :photoset_id,   String, :index => true
   property :domain,        String, :index => true
   property :subdomain,     String, :index => true
-  property :info,          Text
+  property :info,          Json
   property :view_count,    Integer, :default => 0
   property :created_at,    DateTime
   property :deleted,       Boolean,  :default => false
   
-  def info=(info_hash)
-    self[:info] = info_hash.to_yaml
-  end
-  
-  def info
-    YAML::load(self[:info])
-  end
+  #def info=(info_hash)
+  #  self[:info] = info_hash.to_yaml
+  #end
+  #
+  #def info
+  #  YAML::load(self[:info])
+  #end
   
   def image_url
     "http://farm#{self.farm}.static.flickr.com/#{self.server}/#{self.primary}_#{self.secret}_s.jpg"
@@ -47,7 +47,7 @@ class Photoset
   end
   
   def method_missing(method, *args)
-    info = self.info[method]
+    info = self.info[method.to_s] || self.info[method]
     if info
       info
     else
