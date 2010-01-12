@@ -1,8 +1,12 @@
-<ul>
-  <% for @photoset in @photosets %>
-    <%= erb :'owner/photoset', :layout => false %>
-  <% end %>
-</ul>
+<div class="centered_column">
+  <h1>Your photosets</h1>
+
+  <ul id="photosets">
+    <% for @photoset in @photosets %>
+      <%= erb :'owner/photoset', :layout => false %>
+    <% end %>
+  </ul>
+</div>
 
 <script type="text/javascript" charset="utf-8">
   $(rreset.owner.initialize_photosets);

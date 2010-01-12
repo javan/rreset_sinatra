@@ -1,15 +1,11 @@
-<li id="photoset_<%= @photoset.photoset_id %>" class="photoset">
-  <label>
-    <img src="<%= @photoset.image_url %>" /> <h2><%= @photoset.title %></h2>
-    <input class="toggle" type="checkbox" value="<%= @photoset.photoset_id %>" <%= 'checked="checked"' if @photoset.shared? %> />
-  </label>
+<li id="photoset_<%= @photoset.photoset_id %>" class="photoset box_shadow <%= 'shared' if @photoset.shared? %>">
   <% if @photoset.shared? %>
-    <p>
-      subdomain? <input type="text" name="subdomain" />
-      domain? <input type="text" name="domain" />
-    </p>
-    <p>
-      <a href="http://<%= @photoset.url %>">view</a>
-    </p>
+    <a href="http://<%= @photoset.url %>"><img src="<%= @photoset.image_url %>" /></a>
+    <label><input class="toggle" type="checkbox" value="<%= @photoset.photoset_id %>" checked="checked" /> shared</label>
+    <h2><a href="http://<%= @photoset.url %>"><%= @photoset.title %></a></h2>
+  <% else %>
+    <img src="<%= @photoset.image_url %>" />
+    <label><input class="toggle" type="checkbox" value="<%= @photoset.photoset_id %>" /> share this photoset</label>
+    <h2><%= @photoset.title %></h2>
   <% end %>
 </li>
