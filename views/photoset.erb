@@ -1,18 +1,24 @@
-<span id="loading" style="display: none">loading...</span>
+<table id="photo_layout" class="container">
+  <tr>
+    <td colspan="2"><img id="photo" /></td>
+  </tr>
+  <tr>
+    <td id="photo_nav">
+      <p id="controls_horizontal" class="controls">
+        <a href="#" id="prev_photo" onclick="rreset.prev_photo(); return false;">&lsaquo;</a>
+        <a href="#" id="next_photo" onclick="rreset.next_photo(); return false;">&rsaquo;</a>
+      </p>
 
-<p><img id="photo" /></p>
+      <p id="controls_vertical" class="controls">
+        <a href="#" id="bigger_photo"  onclick="rreset.bigger_photo();  return false;">+</a>
+        <a href="#" id="smaller_photo" onclick="rreset.smaller_photo(); return false;">-</a>
+      </p>
+    </td>
+    <td id="photo_info"></td>
+  </tr>
+</table>
 
-<p id="controls_horizontal" class="controls">
-  <a href="#" id="prev_photo" onclick="rreset.prev_photo(); return false;">&lsaquo;</a>
-  <a href="#" id="next_photo" onclick="rreset.next_photo(); return false;">&rsaquo;</a>
-</p>
-
-<p id="controls_vertical" class="controls">
-  <a href="#" id="bigger_photo"  onclick="rreset.bigger_photo();  return false;">+</a>
-  <a href="#" id="smaller_photo" onclick="rreset.smaller_photo(); return false;">-</a>
-</p>
-
-<p id="info"></p>
+<p id="footer">rreset was here</p>
 
 <script type="text/javascript" charset="utf-8">
   $(function(){ 

@@ -148,7 +148,7 @@ var rreset = {
     }
     
     var title = rreset.photo[rreset.current_photo_id].photo.title._content;
-    $('p#info').html(title);
+    $('#photo_info').html(title);
     document.title = title || 'rreset.com';
   },
   

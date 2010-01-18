@@ -11,11 +11,12 @@
     rreset.api_key = '<%= FLICKR_KEY %>';
   </script>
   <link href="/css/rreset.css" media="screen" rel="stylesheet" type="text/css" />
-  <title>rreset</title>
+  <title>rreset &mdash; most certainly the best way to view flickr sets.</title>
 
 </head>
 
 <body>
   <%= yield %>
+  <span id="loading" style="display: none">loading...</span>
 </body>
 </html>
