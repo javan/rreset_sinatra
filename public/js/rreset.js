@@ -10,6 +10,7 @@ var rreset = {
   window_hash_override: null,
   api_endpoint: 'http://api.flickr.com/services/rest/?',
   api_key: null,
+  original_title: document.title,
 
   initialize_photoset: function(photoset_id){
     rreset.photoset_id = photoset_id;
@@ -148,8 +149,9 @@ var rreset = {
     }
     
     var title = rreset.photo[rreset.current_photo_id].photo.title._content;
+    console.log(rreset.photo[rreset.current_photo_id].photo);
     $('#photo_info').html(title);
-    document.title = title || 'rreset.com';
+    document.title = title;
   },
   
   preload_neighbors: function() {

@@ -1,26 +1,24 @@
 class Photoset
   
-  DOMAIN = 'rreset.com'
+  include MongoMapper::Document
   
-  include DataMapper::Resource
+  key :user_id,       String
+  key :photoset_id,   String
+  key :domain,        String
+  key :subdomain,     String
+  key :farm,          String
+  key :server,        String
+  key :primary,       String
+  key :secret,        String
+  key :view_count,    Integer, :default => 0
+  key :shared,        Boolean,  :default => true
+  timestamps!
   
-  property :id,            Serial
-  property :user_id,       String, :index => true
-  property :photoset_id,   String, :index => true
-  property :domain,        String, :index => true
-  property :subdomain,     String, :index => true
-  property :info,          Json
-  property :view_count,    Integer, :default => 0
-  property :created_at,    DateTime
-  property :deleted,       Boolean,  :default => false
+  #ensure_index :user_id
   
-  #def info=(info_hash)
-  #  self[:info] = info_hash.to_yaml
-  #end
-  #
-  #def info
-  #  YAML::load(self[:info])
-  #end
+  def self.domain
+    'rreset.com'
+  end
   
   def image_url
     "http://farm#{self.farm}.static.flickr.com/#{self.server}/#{self.primary}_#{self.secret}_s.jpg"
@@ -28,7 +26,7 @@ class Photoset
   
   def url
     if ENV['RACK_ENV'] == 'development'
-      "localhost:9393/photosets/#{self.photoset_id}"
+      "localhost:9393/sets/#{self.photoset_id}"
     elsif self.domain
       self.domain
     elsif self.subdomain
@@ -39,20 +37,7 @@ class Photoset
   end
   
   def shared?
-    if self.created_at.nil? || self.deleted?
-      false
-    else
-      true
-    end
-  end
-  
-  def method_missing(method, *args)
-    info = self.info[method.to_s] || self.info[method]
-    if info
-      info
-    else
-      raise NoMethodError
-    end
+    self.created_at && super
   end
   
 end

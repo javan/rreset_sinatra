@@ -1,21 +1,18 @@
 require 'rubygems'
 require 'sinatra'
-require 'yaml'
-require 'dm-core'
-require 'dm-timestamps'
-require 'dm-types'
+require 'active_support'
+require 'mongo_mapper'
 require 'lib/core_extensions'
 require 'lib/flickr'
 require 'lib/photoset.rb'
 
 enable :sessions
 
-DataMapper.setup(:default, ENV['DATABASE_URL'] || 'mysql://localhost/rreset')
+MongoMapper.database = 'rreset'
 
 configure do
   FLICKR_KEY = ENV['FLICKR_KEY'] || '300af3865b046365f28aebbb392a3065'
   FLICKR_SECRET  = ENV['FLICKR_SECRET'] || '38d1e4ab6e9d89e1'
-  DataMapper.auto_upgrade!
 end
 
 helpers do
@@ -36,19 +33,19 @@ get '/login' do
   @auth = Flickr.auth_get_token(params[:frob])
   session[:flickr] = { :user_id => @auth[:user][:nsid], :token => @auth[:token] }
   
-  redirect '/photosets'
+  redirect '/sets'
 end
 
-get '/photosets' do
-  @created_photosets = Photoset.all(:user_id => session[:flickr][:user_id], :deleted => false).index_by { |p| p.photoset_id } rescue {}
-  @photosets = Flickr.photosets_get_list(session[:flickr][:user_id])
+get '/sets' do
+  created_photosets = Photoset.all(:user_id => session[:flickr][:user_id], :shared => true).index_by { |p| p.photoset_id } rescue {}
+  photosets = Flickr.photosets_get_list(session[:flickr][:user_id])
   
   created, not_created = [], []
-  @photosets.each do |photoset|
-    if @created_photosets[photoset[:id]]
-      created << @created_photosets[photoset[:id]]
+  photosets.each do |photoset|
+    if created_photosets[photoset[:id]]
+      created << created_photosets[photoset[:id]]
     else
-      not_created << Photoset.new(:photoset_id => photoset.delete(:id), :info => photoset)
+      not_created << Photoset.new({ :photoset_id => photoset.delete(:id), :shared => false }.merge(photoset))
     end
   end
   @photosets = created + not_created
@@ -56,26 +53,27 @@ get '/photosets' do
   erb :'owner/photosets'
 end
 
-post '/photosets' do
-  info = Flickr.photoset_get_info(params[:photoset_id])
+post '/sets' do
+  info = Flickr.photoset_get_info(params[:photoset_id]).except(:id)
   @photoset = Photoset.first(:user_id => session[:flickr][:user_id], :photoset_id => params[:photoset_id])
   if @photoset
-    @photoset.update(:deleted => false, :info => info)
+    @photoset.update_attributes({ :shared => true }.merge(info))
   else
-    @photoset = Photoset.create(:user_id => session[:flickr][:user_id], :photoset_id => params[:photoset_id], :info => info)
+    info.delete(:id)
+    @photoset = Photoset.create(info.merge(:user_id => session[:flickr][:user_id], :photoset_id => params[:photoset_id]))
   end
   @created_photosets = { @photoset.photoset_id => true }
   erb :'owner/photoset', :layout => false
 end
 
-delete '/photosets/:photoset_id' do
+delete '/sets/:photoset_id' do
   @photoset = Photoset.first(:photoset_id => params[:photoset_id], :user_id => session[:flickr][:user_id])
   @photoset.update(:deleted => true)
   
   erb :'owner/photoset', :layout => false
 end
 
-get '/photosets/:photoset_id/?' do
-  @photoset = Photoset.first(:photoset_id => params[:photoset_id], :deleted => false)
+get '/sets/:photoset_id/?' do
+  @photoset = Photoset.first(:photoset_id => params[:photoset_id], :shared => true)
   erb :photoset
 end

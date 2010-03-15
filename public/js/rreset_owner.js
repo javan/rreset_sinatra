@@ -6,7 +6,7 @@ rreset.owner = {
       checkbox.parent().find(':input').attr('disabled', true);
       if (checkbox.attr('checked') == true) {
         $.ajax({
-          url: '/photosets',
+          url: '/sets',
           type: 'POST', data: { photoset_id: checkbox.attr('value') },
           success: function(html) {
             $('#photoset_'+checkbox.attr('value')).replaceWith(html);
@@ -14,7 +14,7 @@ rreset.owner = {
         });
       } else {
         $.ajax({ 
-          url: '/photosets/'+checkbox.attr('value'), 
+          url: '/sets/'+checkbox.attr('value'), 
           type: 'DELETE', 
           success: function(html) {
             $('#photoset_'+checkbox.attr('value')).replaceWith(html);
