@@ -10,8 +10,9 @@ enable :sessions
 if ENV['MONGOHQ_URL']
   MongoMapper.config = { 'heroku' => { 'uri' => ENV['MONGOHQ_URL'] } }
   MongoMapper.connect('heroku')
+else
+  MongoMapper.database = 'rreset'
 end
-MongoMapper.database = 'rreset'
 
 configure do
   FLICKR_KEY = ENV['FLICKR_KEY'] || '300af3865b046365f28aebbb392a3065'
