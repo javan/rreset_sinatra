@@ -7,6 +7,17 @@ require 'lib/photoset.rb'
 
 enable :sessions
 
+if ENV['HOPTOAD_KEY']
+  require 'hoptoad_notifier'
+  
+  HoptoadNotifier.configure do |config|
+    config.api_key = 'my_api_key'
+  end
+  
+  use HoptoadNotifier::Rack
+  enable :raise_errors
+end
+
 if ENV['MONGOHQ_URL']
   MongoMapper.config = { 'heroku' => { 'uri' => ENV['MONGOHQ_URL'] } }
   MongoMapper.connect('heroku')
@@ -23,10 +34,6 @@ helpers do
   def signed_in?
     session[:flickr] && session[:flickr][:user_id] && session[:flickr][:token]
   end
-end
-
-error do
-  "Oops. #{request.env['sinatra.error'].name} - #{request.env['sinatra.error'].message}"
 end
 
 get '/' do
