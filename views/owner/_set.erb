@@ -1,8 +1,8 @@
 <li id="set_<%= @set.photoset_id %>" class="set box_shadow <%= 'shared' if @set.shared? %>">
   <% if @set.shared? %>
-    <a href="http://<%= @set.url %>"><img src="<%= @set.image_url %>" /></a>
+    <a href="<%= @set.url %>"><img src="<%= @set.image_url %>" /></a>
     <label><input class="toggle" type="checkbox" value="<%= @set.photoset_id %>" checked="checked" /> shared</label>
-    <h2><a href="http://<%= @set.url %>"><%= @set.title %></a></h2>
+    <h2><a href="<%= @set.url %>"><%= @set.title %></a></h2>
   <% else %>
     <img src="<%= @set.image_url %>" />
     <label><input class="toggle" type="checkbox" value="<%= @set.photoset_id %>" /> share this set</label>
