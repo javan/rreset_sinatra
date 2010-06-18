@@ -274,24 +274,10 @@ var rreset = {
   },
   
   initialize_key_controls: function() {
-    $(document).keyup(function(e) {
-      e.preventDefault();
-      var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
-			switch(key) {
-				case 37: // left
-				  rreset.prev_photo();
-				  break;
-				case 38: // up
-				  rreset.bigger_photo();
-				  break;
-				case 39: // right
-				  rreset.next_photo();
-				  break;
-				case 40: // down
-				  rreset.smaller_photo();
-				  break;
-			}
-    });
+    $(document).bind('keydown', 'up',    function() { rreset.bigger_photo();  return false; });
+    $(document).bind('keydown', 'down',  function() { rreset.smaller_photo(); return false; });
+    $(document).bind('keydown', 'left',  function() { rreset.prev_photo();    return false; });
+    $(document).bind('keydown', 'right', function() { rreset.next_photo();    return false; });
   },
   
   bad_response: function(){
