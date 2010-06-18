@@ -8,7 +8,8 @@ require 'lib/photoset.rb'
 enable :sessions
 
 if ENV['MONGOHQ_URL']
-  MongoMapper.connect({ 'uri' => ENV['MONGOHQ_URL'] })
+  MongoMapper.config = { 'heroku' => { 'uri' => ENV['MONGOHQ_URL'] } }
+  MongoMapper.connect('heroku')
 end
 MongoMapper.database = 'rreset'
 
