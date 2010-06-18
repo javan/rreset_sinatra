@@ -14,8 +14,6 @@ class Photoset
   key :shared,        Boolean,  :default => true
   timestamps!
   
-  #ensure_index :user_id
-  
   def image_url
     "http://farm#{self.farm}.static.flickr.com/#{self.server}/#{self.primary}_#{self.secret}_s.jpg"
   end

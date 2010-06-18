@@ -10,10 +10,11 @@ var rreset = {
   window_hash_override: null,
   api_endpoint: 'http://api.flickr.com/services/rest/?',
   api_key: null,
-  original_title: document.title,
+  original_title: null,
 
   initialize_set: function(photoset_id){
     rreset.set_id = photoset_id;
+    rreset.original_title = $('title:first').html();
     rreset.load_set();
     rreset.observe_window_hash_change();
     rreset.initialize_key_controls();
@@ -149,14 +150,16 @@ var rreset = {
     }
     
     var photo = rreset.photo[rreset.current_photo_id].photo
-    var title = photo.title._content;
-    console.log(photo);
-    console.log(rreset.set);
     var license = rreset.flickr_license(photo.license);
     $('#license_link').attr({ href: license.url, title: license.name });
     $('#flickr_link').attr({ href: 'http://flickr.com/photos/'+rreset.set.owner+'/'+photo.id });
     $('#photo_info .content').show();
-    document.title = title;
+    
+    if (photo.title._content == '') {
+      document.title = rreset.original_title;
+    } else {
+      document.title = photo.title._content + ' :: ' + rreset.original_title;
+    }
   },
   
   preload_neighbors: function() {

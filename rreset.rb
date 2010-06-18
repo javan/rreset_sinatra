@@ -28,6 +28,8 @@ end
 configure do
   FLICKR_KEY = ENV['FLICKR_KEY'] || '300af3865b046365f28aebbb392a3065'
   FLICKR_SECRET  = ENV['FLICKR_SECRET'] || '38d1e4ab6e9d89e1'
+  Photoset.ensure_index(:user_id)
+  Photoset.ensure_index(:photoset_id)
 end
 
 helpers do
