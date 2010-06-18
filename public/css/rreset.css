@@ -44,12 +44,12 @@ div.centered_column {
   margin: 0 auto;
 }
 
-ul#photosets {
+ul#sets {
   margin: 0;
   padding: 0;
 }
 
-.photoset {
+.set {
   list-style-type: none;
   margin: 0 25px 25px 0;
   padding: 5px;
@@ -60,7 +60,7 @@ ul#photosets {
   color: #333;
 }
 
-  .photoset h2 {
+  .set h2 {
     margin: 12px 0 0 0;
     padding: 0;
     font-weight: normal;
@@ -68,36 +68,36 @@ ul#photosets {
     letter-spacing: .03em;
   }
   
-  .photoset h2 a {
+  .set h2 a {
     text-decoration: none;
     font-weight: bold;
   }
   
-  .photoset img {
+  .set img {
     float: left;
     margin-right: 10px;
     border: 1px solid #eee;
     width: 75px;
     height: 75px;
   }
-  .photoset label {
+  .set label {
     margin: 0;
     padding: 0;
     font-size: 11px;
   }
   
-  .photoset label input {
+  .set label input {
     margin: 0;
     padding: 0;
   }
 
-.photoset.shared, .photoset.shared h2 a {
+.set.shared, .set.shared h2 a {
   background-color: #cc3ab2;
   color: #fff !important;
   text-shadow: #333 1px 1px 0;
 }
 
-  .photoset.shared img {
+  .set.shared img {
     border: 1px solid #cc3ab2;
   }
   
@@ -190,6 +190,24 @@ p.controls {
     color: #cc3ab2 !important;
   }
 
+#photo_info {
+  font-size: 12px;
+  text-align: right;
+  line-height: 16px;
+  color: #333;
+}
+  #photo_info .content {
+    display: none;
+  }
+  
+  #photo_info a {
+    text-decoration: none;
+  }
+
+  #photo_info a:hover {
+    text-decoration: underline;
+  }
+  
 span#loading {
   position: fixed;  
   top: 0;

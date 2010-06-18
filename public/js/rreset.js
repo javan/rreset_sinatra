@@ -1,6 +1,6 @@
 var rreset = {
   photoset_id: null,
-  photoset: null,
+  set: null,
   photo: {},
   current_photo_id: null,
   photo_size: 4,
@@ -12,24 +12,24 @@ var rreset = {
   api_key: null,
   original_title: document.title,
 
-  initialize_photoset: function(photoset_id){
-    rreset.photoset_id = photoset_id;
-    rreset.load_photoset();
+  initialize_set: function(photoset_id){
+    rreset.set_id = photoset_id;
+    rreset.load_set();
     rreset.observe_window_hash_change();
     rreset.initialize_key_controls();
   },
   
-  load_photoset: function(){
+  load_set: function(){
     rreset.loading();
-    $.getJSON([rreset.api_endpoint, 'api_key=', rreset.api_key, '&method=flickr.photosets.getPhotos', '&photoset_id=', rreset.photoset_id, '&format=json&jsoncallback=?'].join(''), function(data){
+    $.getJSON([rreset.api_endpoint, 'api_key=', rreset.api_key, '&method=flickr.photosets.getPhotos', '&photoset_id=', rreset.set_id, '&format=json&jsoncallback=?'].join(''), function(data){
       if (data.stat != 'ok') {
         return rreset.bad_response();
       }
-      rreset.photoset = data.photoset;
-      rreset.photoset.photo = rreset.photoset.photo;
+      rreset.set = data.photoset;
+      rreset.set.photo = rreset.set.photo;
       // make an array of the photoset ids and initialize the photo object with the index
       var index = 0;
-      $.each(rreset.photoset.photo, function(){
+      $.each(rreset.set.photo, function(){
         rreset.photo[this.id] = {};
         rreset.photo[this.id].index = index;
         index++;
@@ -148,9 +148,14 @@ var rreset = {
       return false;
     }
     
-    var title = rreset.photo[rreset.current_photo_id].photo.title._content;
-    console.log(rreset.photo[rreset.current_photo_id].photo);
-    $('#photo_info').html(title);
+    var photo = rreset.photo[rreset.current_photo_id].photo
+    var title = photo.title._content;
+    console.log(photo);
+    console.log(rreset.set);
+    var license = rreset.flickr_license(photo.license);
+    $('#license_link').attr({ href: license.url, title: license.name });
+    $('#flickr_link').attr({ href: 'http://flickr.com/photos/'+rreset.set.owner+'/'+photo.id });
+    $('#photo_info .content').show();
     document.title = title;
   },
   
@@ -250,8 +255,8 @@ var rreset = {
     if (window.location.hash == '') {
       // If there's no photo_id in the window hash and the photoset is loaded,
       // return the last photo in the set, we're on the "index" page.
-      if (rreset.photoset.photo) {
-        return rreset.photoset.photo[rreset.photoset.photo.length - 1].id;
+      if (rreset.set.photo) {
+        return rreset.set.photo[rreset.set.photo.length - 1].id;
       } else {
         return null;
       }
@@ -325,6 +330,32 @@ var rreset = {
       $('.activity').removeClass('activity');
     }, 10);
     
+  },
+  
+  flickr_license: function(license_id) {
+    switch(parseInt(license_id)) {
+      case 4:
+        return { name: "Attribution License", url: "http://creativecommons.org/licenses/by/2.0/" };
+        break;
+      case 6:
+        return { name: "Attribution-NoDerivs License", url: "http://creativecommons.org/licenses/by-nd/2.0/" };
+        break;
+      case 3:
+        return { name: "Attribution-NonCommercial-NoDerivs License", url: "http://creativecommons.org/licenses/by-nc-nd/2.0/" };
+        break;
+      case 2:
+        return { name: "Attribution-NonCommercial License", url: "http://creativecommons.org/licenses/by-nc/2.0/" };
+        break;
+      case 1:
+        return { name: "Attribution-NonCommercial-ShareAlike License", url: "http://creativecommons.org/licenses/by-nc-sa/2.0/" };
+        break;
+      case 5:
+        return { name: "Attribution-ShareAlike License", url: "http://creativecommons.org/licenses/by-sa/2.0/" };
+        break;
+      case 7:
+        return { name: "No known copyright restrictions", url: "http://flickr.com/commons/usage/" };
+        break;
+    }
   }
   
 }

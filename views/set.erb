@@ -14,14 +14,17 @@
         <a href="#" id="smaller_photo" onclick="rreset.smaller_photo(); return false;">-</a>
       </p>
     </td>
-    <td id="photo_info"></td>
+    <td id="photo_info">
+      <div class="content">
+        <a href="#" id="flickr_link">view on flickr</a>, <a href="#" id="license_link">&copy;</a><br />
+        <a href="http://rreset.com/">powered by rreset</a>
+      </div>
+    </td>
   </tr>
 </table>
 
-<p id="footer">rreset was here</p>
-
 <script type="text/javascript" charset="utf-8">
   $(function(){ 
-    rreset.initialize_photoset('<%= @photoset.photoset_id %>');
+    rreset.initialize_set('<%= @set.photoset_id %>');
   });
 </script>

@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'sinatra'
-require 'active_support'
 require 'mongo_mapper'
 require 'lib/core_extensions'
 require 'lib/flickr'
@@ -37,43 +36,43 @@ get '/login' do
 end
 
 get '/sets' do
-  created_photosets = Photoset.all(:user_id => session[:flickr][:user_id], :shared => true).index_by { |p| p.photoset_id } rescue {}
-  photosets = Flickr.photosets_get_list(session[:flickr][:user_id])
+  created_sets = Photoset.all(:user_id => session[:flickr][:user_id], :shared => true).index_by(&:photoset_id) rescue {}
+  sets = Flickr.photosets_get_list(session[:flickr][:user_id])
   
   created, not_created = [], []
-  photosets.each do |photoset|
-    if created_photosets[photoset[:id]]
-      created << created_photosets[photoset[:id]]
+  sets.each do |set|
+    if created_sets[set[:id]]
+      created << created_sets[set[:id]]
     else
-      not_created << Photoset.new({ :photoset_id => photoset.delete(:id), :shared => false }.merge(photoset))
+      not_created << Photoset.new({ :photoset_id => set.delete(:id), :shared => false }.merge(set))
     end
   end
-  @photosets = created + not_created
+  @sets = created + not_created
   
-  erb :'owner/photosets'
+  erb :'owner/sets'
 end
 
 post '/sets' do
   info = Flickr.photoset_get_info(params[:photoset_id]).except(:id)
-  @photoset = Photoset.first(:user_id => session[:flickr][:user_id], :photoset_id => params[:photoset_id])
-  if @photoset
-    @photoset.update_attributes({ :shared => true }.merge(info))
+  @set = Photoset.first(:user_id => session[:flickr][:user_id], :photoset_id => params[:photoset_id])
+  if @set
+    @set.update_attributes({ :shared => true }.merge(info))
   else
     info.delete(:id)
-    @photoset = Photoset.create(info.merge(:user_id => session[:flickr][:user_id], :photoset_id => params[:photoset_id]))
+    @set = Photoset.create(info.merge(:user_id => session[:flickr][:user_id], :photoset_id => params[:photoset_id]))
   end
-  @created_photosets = { @photoset.photoset_id => true }
-  erb :'owner/photoset', :layout => false
+
+  erb :'owner/_set', :layout => false
 end
 
 delete '/sets/:photoset_id' do
-  @photoset = Photoset.first(:photoset_id => params[:photoset_id], :user_id => session[:flickr][:user_id])
-  @photoset.update(:deleted => true)
+  @set = Photoset.first(:photoset_id => params[:photoset_id], :user_id => session[:flickr][:user_id])
+  @set.update_attributes(:shared => false)
   
-  erb :'owner/photoset', :layout => false
+  erb :'owner/_set', :layout => false
 end
 
 get '/sets/:photoset_id/?' do
-  @photoset = Photoset.first(:photoset_id => params[:photoset_id], :shared => true)
-  erb :photoset
+  @set = Photoset.first(:photoset_id => params[:photoset_id], :shared => true)
+  erb :set
 end

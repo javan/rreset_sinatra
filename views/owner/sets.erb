@@ -1,0 +1,13 @@
+<div class="centered_column">
+  <h1>Your Sets</h1>
+
+  <ul id="sets">
+    <% for @set in @sets %>
+      <%= erb :'owner/_set', :layout => false %>
+    <% end %>
+  </ul>
+</div>
+
+<script type="text/javascript" charset="utf-8">
+  $(rreset.owner.initialize_sets);
+</script>
