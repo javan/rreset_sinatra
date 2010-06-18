@@ -7,6 +7,9 @@ require 'lib/photoset.rb'
 
 enable :sessions
 
+if ENV['MONGOHQ_URL']
+  MongoMapper.connect({ 'uri' => ENV['MONGOHQ_URL'] })
+end
 MongoMapper.database = 'rreset'
 
 configure do
