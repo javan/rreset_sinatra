@@ -16,24 +16,12 @@ class Photoset
   
   #ensure_index :user_id
   
-  def self.domain
-    'rreset.com'
-  end
-  
   def image_url
     "http://farm#{self.farm}.static.flickr.com/#{self.server}/#{self.primary}_#{self.secret}_s.jpg"
   end
   
   def url
-    if ENV['RACK_ENV'] == 'development'
-      "localhost:9393/sets/#{self.photoset_id}"
-    elsif self.domain
-      self.domain
-    elsif self.subdomain
-      "#{self.subdomain}.#{DOMAIN}"
-    else
-      "#{self.photoset_id}.#{DOMAIN}"
-    end
+    "/sets/#{self.photoset_id}"
   end
   
   def shared?
