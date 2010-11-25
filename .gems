@@ -2,3 +2,4 @@ httparty
 mongo_mapper
 bson_ext
 hoptoad_notifier
+newrelic_rpm
