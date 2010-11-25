@@ -32,6 +32,10 @@ configure do
   Photoset.ensure_index(:photoset_id)
 end
 
+configure :production do
+  require 'newrelic_rpm'
+end
+
 helpers do
   def signed_in?
     session[:flickr] && session[:flickr][:user_id] && session[:flickr][:token]
