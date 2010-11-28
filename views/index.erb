@@ -1,3 +1,9 @@
+<h1>rreset is a minimalist flickr set viewer</h1>
+
 <p>
-  <a href="<%= Flickr.login_url %>">Authenticate with your flickr account</a> <em>or</em> <a href="http://rreset.com/sets/72157622740428581#4755379980">view an example set.</a>
+  <% if signed_in? %>
+    <a href="/sets">View your sets.</a>
+  <% else %>
+    <a href="http://rreset.com/sets/72157622740428581#4755379980">View an example set</a> <em>or</em> <a href="<%= Flickr.login_url %>">authenticate with your flickr account</a> to share your own sets.
+  <% end %>
 </p>

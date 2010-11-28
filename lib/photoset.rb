@@ -4,13 +4,10 @@ class Photoset
   
   key :user_id,       String
   key :photoset_id,   String
-  key :domain,        String
-  key :subdomain,     String
   key :farm,          String
   key :server,        String
   key :primary,       String
   key :secret,        String
-  key :view_count,    Integer, :default => 0
   key :shared,        Boolean,  :default => true
   timestamps!
   

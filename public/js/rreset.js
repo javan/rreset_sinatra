@@ -72,6 +72,8 @@ var rreset = {
   },
   
   display_photo: function() {
+    _gaq.push(['_trackEvent', 'Photos', 'View', rreset.photoset_id+' - '+rreset.current_photo_id, rreset.photo_size]);
+    
     // local function to call after the image has been preloaded.
     var loaded = function() {
       if (!rreset.photo[rreset.current_photo_id].size) {
@@ -175,6 +177,7 @@ var rreset = {
   },
 
   next_photo: function() {
+    _gaq.push(['_trackEvent', 'Sets', 'Navigate', 'next']);
     if (rreset.is_loading()) {
       return false;
     }
@@ -206,6 +209,7 @@ var rreset = {
   },
 
   prev_photo: function() {
+    _gaq.push(['_trackEvent', 'Sets', 'Navigate', 'previous']);
     if (rreset.is_loading()) {
       return false;
     }
@@ -235,6 +239,7 @@ var rreset = {
   },
   
   bigger_photo: function() {
+    _gaq.push(['_trackEvent', 'Sets', 'Navigate', 'bigger', rreset.photo_size + 1]);
     if (rreset.photo[rreset.current_photo_id].size[rreset.photo_size + 1]) {
       rreset.photo_size++;
       $('#bigger_photo').addClass('activity');
@@ -245,6 +250,7 @@ var rreset = {
   },
   
   smaller_photo: function() {
+    _gaq.push(['_trackEvent', 'Sets', 'Navigate', 'smaller', rreset.photo_size - 1]);
     if (rreset.photo[rreset.current_photo_id].size[rreset.photo_size - 1]) {
       rreset.photo_size--;
       $('#smaller_photo').addClass('activity');
