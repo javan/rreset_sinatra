@@ -1,5 +1,4 @@
 var rreset = {
-  photoset_id: null,
   set: null,
   photo: {},
   current_photo_id: null,
@@ -72,7 +71,7 @@ var rreset = {
   },
   
   display_photo: function() {
-    _gaq.push(['_trackEvent', 'Photos', 'View', rreset.photoset_id+' - '+rreset.current_photo_id, rreset.photo_size]);
+    _gaq.push(['_trackEvent', 'Photos', 'View', rreset.set_id+' - '+rreset.current_photo_id, rreset.photo_size]);
     
     // local function to call after the image has been preloaded.
     var loaded = function() {
