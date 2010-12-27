@@ -153,11 +153,12 @@ var rreset = {
     var photo = rreset.photo[rreset.current_photo_id].photo
     var license = rreset.flickr_license(photo.license);
     
-    if (!license) {
-      return false;
+    if (license) {
+      $('#license_link').attr({ href: license.url, title: license.name });
+    } else {
+      $('#license_link').hide();
     }
     
-    $('#license_link').attr({ href: license.url, title: license.name });
     $('#flickr_link').attr({ href: 'http://flickr.com/photos/'+rreset.set.owner+'/'+photo.id });
     $('#photo_info .content').show();
     
