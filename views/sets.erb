@@ -1,0 +1,17 @@
+<div class="centered_column">
+  <h1>All Sets</h1>
+
+  <ul id="sets">
+    <% for set in @sets %>
+      <li id="set_<%= set.photoset_id %>" class="set box_shadow shared">
+        <a href="<%= set.url %>"><img src="<%= set.image_url %>" /></a>
+        <h2><a href="<%= set.url %>"><%= set.title %></a></h2>
+        <p class="meta">
+          <%= set.created_at %><br />
+          <a href="http://flickr.com/<%= set.user_id %>"><%= set.user_id %>
+        </p>
+      </li>
+    <% end %>
+  </ul>
+  <br style="clear: both" />
+</div>

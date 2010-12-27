@@ -97,6 +97,16 @@ ul#sets {
     margin: 0;
     padding: 0;
   }
+  
+  .set .meta {
+    font-size: 10px;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .set .meta a {
+    color: #fff;
+  }
 
 .set.shared, .set.shared h2 a {
   background-color: #cc3ab2;

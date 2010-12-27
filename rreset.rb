@@ -90,6 +90,12 @@ delete '/sets/:photoset_id' do
   erb :'owner/_set', :layout => false
 end
 
+get '/sets/all' do
+  @sets = Photoset.all(:order => 'created_at desc')
+  
+  erb :sets
+end
+
 get '/sets/:photoset_id/?' do
   @set = Photoset.first(:photoset_id => params[:photoset_id], :shared => true)
   erb :set
